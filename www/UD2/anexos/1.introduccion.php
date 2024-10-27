@@ -8,12 +8,15 @@
         <div class="container-fluid">
             <h1>Anexo 1. Introduccion</h1>
             <br />
+
             <h3>Tarea 1. Localizar errores.</h3> 
                 <?php
                 echo '¿Cómo estás? ';
                 echo 'Estoy bien, gracias.';
                 ?>
             <br />
+        
+
             <h3>Tarea 2. Variable, declaración.</h3>
             <p>Indica cuál de los siguientes son nombres de variables válidas e inválidos e indica por qué:</p>
             <ul>
@@ -50,11 +53,12 @@
             $a = "true";
             echo 'is_bool($a): ' . is_bool($a) . '<br />';
             $b = 0;
-            echo 'is_bool($b): ' . is_bool($b) . '<br />';
+            echo 'is_bool($b): ' . is_bool($b) . '<br/>';
             if($b) 
             {
-                echo 'se entra dentro de if($b)' . '<br />';
+                echo 'se entra dentro de if($b)' . '<br/>';
             }
+
             $c = "false";
             echo 'gettype($c): ' . gettype($c) . '<br />';
             $d = "";
