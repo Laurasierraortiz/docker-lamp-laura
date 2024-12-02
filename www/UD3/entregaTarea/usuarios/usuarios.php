@@ -38,7 +38,6 @@
                                     <th>Username</th>
                                     <th>Nombre</th>
                                     <th>Apellidos</th>
-                                    <th>Contraseña</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -47,6 +46,7 @@
                             <?php
                                 
                                 include_once('../pdo.php');//incluimos el archivo pho.php para establecer conexión a la DB
+                                
                                 
                                 try {
                                     $conexion = conexionPDO('tareas');//conectamos a la DB(PDO)
@@ -65,7 +65,6 @@
                                             echo "<td>" . $usuario['username'] . "</td>";
                                             echo "<td>" . $usuario['nombre'] . "</td>";
                                             echo "<td>" . $usuario['apellidos'] . "</td>";
-                                            echo "<td>" . $usuario['contrasena'] . "</td>";
                                             echo "<td>
                                                 <a href='editaUsuarioForm.php?id=" . $usuario['id'] . "' class='btn btn-warning btn-sm'>Editar</a>
                                                 <a href='borraUsuario.php?id=" . $usuario['id'] . "' class='btn btn-danger btn-sm'>Borrar</a>

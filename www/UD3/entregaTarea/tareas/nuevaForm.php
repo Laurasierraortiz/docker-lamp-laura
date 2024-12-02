@@ -22,6 +22,7 @@
                 </div>
 
                 <div class="container justify-content-between">
+
                 <form action="nueva.php" method="POST" class="mb-2 w-50">
                 <div class="mb-3">
                     <label for="titulo" class="form-label">Título</label>
@@ -43,7 +44,33 @@
                 <div class="mb-3">
                     <label for="">Usuario</label>
                     <select class="form-select" name="usuario" id="usuario">
-                        <option disabled value="">Seleccione un usuario</option>
+                    <option value="">Selecciona un usuario</option>
+                    <?php
+
+                    //Para seleccionar el id del usuario tenemos que cogerla  a través de la URL
+                    //$id = $_GET['id'];
+
+                    include_once('../mysqli.php');//incluimos el archivo mysqli.php para conectar a la DB
+                    try{
+                        $conexion = conexionMysqli('tareas');//Conexión a la DB(mysqli)
+
+                        $consulta = $conexion->query(
+                                                "SELECT id, username FROM usuarios");
+                        while($fila = $consulta->fetch_assoc()){
+                            $username = $fila["username"];
+                            echo "<option value='" . $fila['id'] . "'>" . $fila['username'] . "</option>";
+
+                        }
+                    }
+                    
+                    catch(mysqli_sql_exception $e){
+                        echo "<div class='alert alert-danger'>Error al conectar la base de datos: " . $e->get_message() . "</div>";
+                    }
+                    finally{
+                        $conexion->close();
+                    }
+                    
+                ?>
                                   
                     </select>
                 </div>

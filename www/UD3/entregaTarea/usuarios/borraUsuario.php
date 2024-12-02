@@ -30,7 +30,8 @@
                     <?php
   
                     // Conexión a la DB (PDO) 
-                    include_once('../pdo.php');  
+                    include_once('../pdo.php'); 
+                    
                          
                         //Para seleccionar el id del usuario tenemos que cogerla  a través de la URL
                         $id = $_GET['id'];
@@ -53,6 +54,7 @@
                             $consulta->execute();//ejecutamos la consulta
 
                             echo "<div class='alert alert-success'>Usuario borrado correctamente.</div>";
+                            
                         } 
                         //capturamos la excepción
                         catch (PDOException $e) {

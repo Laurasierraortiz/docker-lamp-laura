@@ -32,48 +32,56 @@
                         <table class="table table-striped table-hover">
                             <thead class="thead">
                                 <tr>
+                                    <th>ID</th>
                                     <th>Título</th>
                                     <th>Descripción</th>
                                     <th>Estado</th>
                                     <th>Usuario</th>
-                                    <th>Acciones</th>
+                                    
+                                    
                                 </tr>
                             </thead>
                         
                             <tbody>
                             <?php
-                                
+                                include_once('../mysqli.php');
                                 try {
                                     // Conectar y obtener datos de la base de datos.
-                                    $conexion = new mysqli('db', 'root', 'test', 'tareas');
-                                    $sql = ;
-                                    $resultado = $conexion->query($sql);
-
-                                    if ($resultado->num_rows > 0) {
-                                        while ($fila = $resultado->fetch_assoc()) {
+                                    $conexion = conexionMysqli('tareas');
+                                    $consulta = $conexion->query("
+                                                            SELECT 
+                                                                tareas.id, tareas.titulo, tareas.descripcion, tareas.estado, usuarios.username 
+                                                                FROM tareas LEFT JOIN usuarios 
+                                                                ON tareas.id_usuario = usuarios.id");
+                                    if ($consulta->num_rows > 0) {
+                                        while ($tarea = $consulta->fetch_assoc()) {
                                             echo "<tr>";
-                                            echo "<td>" . $fila['titulo'] . "</td>";
-                                            echo "<td>" . $fila['descripcion'] . "</td>";
-                                            echo "<td>" . $fila['estado'] . "</td>";
-                                            echo "<td>" . $fila['usuario'] . "</td>";
+                                            echo "<td>" . $tarea['id'] . "</td>";
+                                            echo "<td>" . $tarea['titulo'] . "</td>";
+                                            echo "<td>" . $tarea['descripcion'] . "</td>";
+                                            echo "<td>" . $tarea['estado'] . "</td>";
+                                            echo "<td>" . $tarea['username'] . "</td>";
 
                                             echo "<td>
-                                                <a href='editaTareaForm.php?id=" . $fila['id'] . "' class='btn btn-warning btn-sm'>Editar</a>
-                                                <a href='borraTarea.php?id=" . $fila['id'] . "' class='btn btn-danger btn-sm'>Borrar</a>
+                                                <a href='editaTareaForm.php?id=" . htmlspecialchars($tarea['id']) . "' class='btn btn-warning btn-sm'>Editar</a>
+                                                <a href='borraTarea.php?id=" . htmlspecialchars($tarea['id']) . "' class='btn btn-danger btn-sm'>Borrar</a>
                                             </td>";
                                             echo "</tr>";
                                         }
                                     } else {
-                                        echo "<div>No hay tareas registradas.</div>";
+                                        echo "<div class='alert alert-danger'>No hay tareas registradas</div>";
                                     }
 
-                                    $conexion->close();
                                 } 
                                 catch (mysqli_sql_exception $e) {
-                                    echo "<tr><td colspan='6'>Error al obtener datos: " . $e->getMessage() . "</td></tr>";
+                                    echo "<div class='alert alert-danger'>Error al listar usuarios " . $e->getMessage() . "</div>";
+                                }
+                                finally{
+                                    $conexion->close();
                                 }
                                 
                             ?>
+                        </table>
                 </div>
             </main>
         </div>

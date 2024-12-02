@@ -41,7 +41,7 @@
                         $usuario = $consulta->fetch(PDO::FETCH_ASSOC);
                         //fetch: obtiene una fila de la tabla, en este caso el id
                         //POD::FETCH_ASSOC: especifica el formato en que se devuelven los datos, en este caso en un array asociativo
-                        
+                            
                     } 
                     //capturamos la excepción
                     catch (PDOException $e) {
@@ -59,19 +59,19 @@
                 
                 <div class="mb-3">
                     <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo $usuario['nombre']; ?>" required>
                 </div>
                 <div class="mb-3">
                     <label for="apellidos" class="form-label">Apellidos</label>
-                    <input type="text" class="form-control" id="apellidos" name="apellidos" required>
+                    <input type="text" class="form-control" id="apellidos" name="apellidos" value="<?php echo $usuario['apellidos'];?>" required>
                 </div>
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
+                    <input type="text" class="form-control" id="username" name="username"  value="<?php echo $usuario['username'];?>" required>
                 </div>
                 <div class="mb-3">
                     <label for="contrasena" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                    <input type="password" class="form-control" id="contrasena" name="contrasena" value="<?php echo $usuario['contrasena'];?>" required>
                 </div>
                 <div>
                     <button type="submit" class="btn btn-success" value="Enviar">Enviar</button>

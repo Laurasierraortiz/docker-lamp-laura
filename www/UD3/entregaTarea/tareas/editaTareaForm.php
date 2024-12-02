@@ -22,19 +22,48 @@
                 </div>
 
                 <div class="container justify-content-between">
+                <?php
+                   
+                    //Para seleccionar el id del usuario tenemos que cogerla  a través de la URL
+                    $id = $_GET['id'] ?? null;
+                    include_once('../mysqli.php');//incluimos el archivo mysqli.php para conectar a la DB
+
+                    try{
+                        $conexion = conexionMysqli('tareas');//Conexión a la DB(mysqli)
+                        $consulta = $conexion->query(
+                                                "SELECT titulo, descripcion, estado, id_usuario
+                                                 FROM tareas WHERE id = ?");
+                        $consulta->bind_param("i", $id);
+                        $consulta->execute();
+                        $resultado = $consulta->get_result();
+                        $tareas = $consulta->fetch_assoc();
+                        
+                        $usuariosStmt = $conexion->query("SELECT id, username FROM usuarios");
+                        $usuarios = $usuariosStmt->fetch_all(MYSQLI_ASSOC);
+                    }
+                    catch(mysqli_sql_exception $e) {
+                        echo "<div class='alert alert-danger'>Error al conectar la base de datos: " . $e->getMessage() . "</div>";
+                    }
+                    finally{
+                        $conexion->close();
+                    }
+
+                    ?>
+                
+
                 <form action="editaTarea.php" method="POST" class="mb-2 w-50">
                 <div class="mb-3">
-                    <label for="nombre" class="form-label">Título</label>
-                    <input type="text" class="form-control" id="" name="nombre" required>
+                    <label for="titulo" class="form-label">Título</label>
+                    <input type="text" class="form-control" id="titulo" name="titulo" required>
                 </div>
                 <div class="mb-3">
-                    <label for="apellidos" class="form-label">Descripción</label>
-                    <input type="text" class="form-control" id="" name="apellidos" required>
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <input type="text" class="form-control" id="descripcion" name="descripcion" required>
                 </div>
                 <div class="mb-3">
                     <label for="">Estado</label>
-                    <select class="form-select" name="">
-                        <option selected disabled value="">Selecciona estado/option>
+                    <select class="form-select" name="estado">
+                        <option selected disabled value="">Selecciona estado</option>
                         <option>Pendiente</option>
                         <option>En proceso</option>
                         <option>Completada</option>
@@ -42,8 +71,33 @@
                 </div>
                 <div class="mb-3">
                     <label for="">Usuario</label>
-                    <select class="form-select" name="">
-                        <option selected disabled value="">Selecciona un usuario</option>
+                    <select class="form-select" name="usuario">
+                    <option value="">Selecciona un usuario</option>
+                    <?php
+
+                    //Para seleccionar el id del usuario tenemos que cogerla  a través de la URL
+                    //$id = $_GET['id'];
+
+                    include_once('../mysqli.php');//incluimos el archivo mysqli.php para conectar a la DB
+                    try{
+                        $conexion = conexionMysqli('tareas');//Conexión a la DB(mysqli)
+
+                        $consulta = $conexion->query(
+                                                "SELECT id, username FROM usuarios");
+                        while($fila = $consulta->fetch_assoc()){
+                            $username = $fila["username"];
+                            echo "<option value=$username>$username</option>";
+                        }
+                    }
+                    
+                    catch(mysqli_sql_exception $e){
+                        echo "<div class='alert alert-danger'>Error al conectar la base de datos: " . $e->get_message() . "</div>";
+                    }
+                    finally{
+                        $conexion->close();
+                    }
+                    
+                ?>
                     </select>
                 </div>
 

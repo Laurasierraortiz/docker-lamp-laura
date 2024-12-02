@@ -55,51 +55,50 @@
                 <div class="container justify-content-between">
                 <?php
                     include_once("../utils.php");
-                   
 
-                    //Comprobamos si el formulario fue enviado por el método POST
+                   
                     if($_SERVER['REQUEST_METHOD'] == 'POST'){
                         //Recuperamos los datos del formulario
-                        $nombreU = $_POST['nombre'];
-                        $apellidosU = $_POST['apellidos'];
-                        $usernameU = $_POST['username'];
-                        $contrasenaU = $_POST['contrasena'];
-                        $idU = $intval = $_POST['id'];
+                        $nombre = $_POST['nombre'];
+                        $apellidos = $_POST['apellidos'];
+                        $username = $_POST['username'];
+                        $contrasena = $_POST['contrasena'];
+                        $id = $_POST['id'];
+                    
+                         //Llamamos a la función para filtrar y guardar los datos
+                         $validarInfo = validarInfo($nombre, $apellidos, $username, $contrasena);
 
-                        //Llamamos a la función para filtrar y guardar los datos
-                        $validarInfo = validarInfo($nombreU, $apellidosU, $usernameU, $contrasenaU);
-
-                       
-
-                             
-                            include_once('../pdo.php');//incluimos el archivo pdo.php
-                            // Conexión a la DB (PDO)                    
-                            try {
-                                $conexion = conexionPDO('tareas');
+                        include_once('../pdo.php');//incluimos el archivo pdo.php
+                        // Conexión a la DB (PDO)                    
+                        try {
+                            $conexion = conexionPDO('tareas');
+                        
+                            //Introducimos los datos en la tabla
+                            $insert = $conexion->prepare (
+                                                "UPDATE usuarios SET username = :username, nombre = :nombre, apellidos = :apellidos, contrasena = :contrasena WHERE id = :id");
+                                
+                            //Sustituimos cada parámetro por el valor introducido en el formulario
+                            $insert->bindParam(':username', $username, PDO::PARAM_STR);
+                            $insert->bindParam(':nombre', $nombre, PDO::PARAM_STR);
+                            $insert->bindParam(':apellidos', $apellidos, PDO::PARAM_STR);
+                            $insert->bindParam(':contrasena', $contrasena, PDO::PARAM_STR);
+                            $insert->bindParam(':id', $id, PDO::PARAM_INT);
+                            $insert->execute();//ejecutamos la consulta
+                            echo "<div class='alert alert-success'>Datos acualizados correctamente.</div>";
                             
-                                //Introducimos los datos en la tabla
-                                $insert = $conexion->prepare (
-                                                    "UPDATE usuarios set username = :username, nombre = :nombre, apellidos = :apellidos, contrasena = :contrasena where id = :id");
-                                    
-                                //Sustituimos cada parámetro por el valor introducido en el formulario
-                                $insert->bindParam(':username', $usernameU, PDO::PARAM_STR);
-                                $insert->bindParam(':nombre', $nombreU, PDO::PARAM_STR);
-                                $insert->bindParam(':apellidos', $apellidosU, PDO::PARAM_STR);
-                                $insert->bindParam(':contrasena', $contrasenaU, PDO::PARAM_STR);
-                                $insert->bindParam(':id', $idU, PDO::PARAM_INT);
-                                $insert->execute();//ejecutamos la consulta
-                                echo "Datos acualizados correctamente";
-                            }
-                            //lanzamos la excepción
-                            catch(PDOException $e){
-                                echo "Error al conectar a la base de datos: " . $e->getMessage();
-                            }
-                            //finalizamos la conexión
-                            finally{
-                                $conexion = null;
-                            } 
- 
+                        }
+                        //lanzamos la excepción
+                        catch(PDOException $e){
+                            echo "<div class='alert alert-success'>Error al conectar a la base de datos: " . $e->getMessage() . "</div>";
+                            
+                        }
+                        //finalizamos la conexión
+                        finally{
+                            $conexion = null;
                         } 
+                    }
+                    
+                        
                     ?>
                 </div>
             </main>

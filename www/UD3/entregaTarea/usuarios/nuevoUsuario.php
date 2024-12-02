@@ -32,13 +32,13 @@
                     //Comprobamos si el formulario fue enviado por el método POST
                     if($_SERVER['REQUEST_METHOD'] == 'POST'){
                         //Recuperamos los datos del formulario
-                        $nombreU = $_POST['nombre'];
-                        $apellidosU = $_POST['apellidos'];
-                        $usernameU = $_POST['username'];
-                        $contrasenaU = $_POST['contrasena'];
+                        $nombre = $_POST['nombre'];
+                        $apellidos = $_POST['apellidos'];
+                        $username = $_POST['username'];
+                        $contrasena = $_POST['contrasena'];
 
                         //Llamamos a la función para filtrar y guardar los datos
-                        $validarInfo = validarInfo($nombreU, $apellidosU, $usernameU, $contrasenaU);
+                        $validarInfo = validarInfo($nombre, $apellidos, $username, $contrasena);
 
                             include_once('../pdo.php');//llamamos al archivo pdo.php para establecer la conexión 
                             // Conexión a la DB (PDO)                       
@@ -51,10 +51,10 @@
                                             ("INSERT INTO usuarios (username, nombre, apellidos, contrasena)
                                             VALUES (:username, :nombre, :apellidos, :contrasena)");// columnaTabla :valorIntroducido
                                 //Sustituimos cada parámetro por el valor introducido en el formulario
-                                $insert->bindParam(':username', $usernameU, PDO::PARAM_STR);
-                                $insert->bindParam(':nombre', $nombreU, PDO::PARAM_STR);
-                                $insert->bindParam(':apellidos', $apellidosU, PDO::PARAM_STR);
-                                $insert->bindParam(':contrasena', $contrasenaU, PDO::PARAM_STR);
+                                $insert->bindParam(':username', $username, PDO::PARAM_STR);
+                                $insert->bindParam(':nombre', $nombre, PDO::PARAM_STR);
+                                $insert->bindParam(':apellidos', $apellidos, PDO::PARAM_STR);
+                                $insert->bindParam(':contrasena', $contrasena, PDO::PARAM_STR);
                                 //bindParam: método que asocia un valor a un parámetro, en este caso a los que recuperamos del formulario
                                 //PDO::PARA_STR: indica como va a ser el valor introducido, en este caso, un String
                                 $insert->execute();//ejecutamos la consulta

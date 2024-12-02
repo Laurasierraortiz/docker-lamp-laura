@@ -22,56 +22,44 @@
                 </div>
 
                 <div class="container justify-content-between">
-                    <?php 
-
-                    //Función para filtrar la información introducida
-                    function filtrarInput($input){
-                        $input = trim($input);//eliminar espacios en blanco
-                        $input = stripslashes($input);//eliminar barras invertidas
-                        $input = htmlspecialchars($input);//convertir caracteres especiales en html
-                    
-                        return $input;
-                    }
-
-                    //Función para comprobar si la información introducida es válida
-                    function comprobarInfo($info){
-                        $inputFiltrado = filtrarInput($info);
-                    
-                        return (empty($inputFiltrado)  || !preg_match('/^[a-zA-Z0-9\s]*$/', $info))? false : true;  
-                    }//valida que la info introducida solo contenga caracteres de a-z, A-Z, 0-9 y espacios
-
-                    //Comprobamos que todos los campos están correctos y completos
+                <?php 
+                    include_once("../utils.php");
+            
+                    //Comprobamos si el formulario fue enviado por el método POST
                     if($_SERVER['REQUEST_METHOD'] == 'POST'){
                         //Recuperamos los datos del formulario
-                        $tituloT = filtrarInput($_POST['titulo']);
-                        $descripcionT = filtrarInput($_POST['descripcion']);
-                        $estadoT = filtrarInput($_POST['estado']);
-                        $usuarioT = filtrarInput($_POST['usuario']);
-                        
-                    }
+                        $titulo = $_POST['titulo'];
+                        $descripcion = $_POST['descripcion'];
+                        $estado = $_POST['estado'];
+                        $usuario = $_POST['usuario'];
 
-                    //Comprobamos que todos los campos están completos y son correctos
-                    if(comprobarInfo($tituloT) && comprobarInfo($descripcionT) && comprobarInfo($estadoT) && comprobarInfo($usuario)){
-                        
+                        //Llamamos a la función para filtrar y guardar los datos
+                        $validarInfo = validarInfo($titulo, $descripcion, $estado, $usuario);
+
+                        include_once('../mysqli.php');
                         try {
-                            ///Conexión a la DB (mysqli)
-                            $conexion = new mysqli('db', 'root', 'test', 'tareas');
+                            $conexion = conexionMysqli('tareas');//Conexión a la DB (mysqli)
                             //Insertamos los datos en la tabla
-                            $sql = "INSERT INTO tareas (titulo, descripcion, estado) VALUES (?, ?, ?, ?)";
-                            $insert = $conexion->prepare($sql);
-                            $insert->bind_param("ssss", $tituloT, $descripcionT, $estadoT, $usuarioT);
-                            $insert->execute();
+                            $consulta = $conexion->prepare(
+                                                    "INSERT INTO tareas (titulo, descripcion, estado, id_usuario) VALUES (?, ?, ?, ?)");
+                            $consulta->bind_param("ssss", $titulo, $descripcion, $estado, $usuario);
+                            if ($consulta->execute()) {
+                                echo "<div class='alert alert-success'>Tarea creada correctamente.</div>";
+                            } else {
+                                echo "<div class='alert alert-danger'>Error al crear la tarea: " . $conexion->error . "</div>";
+                            }
 
-                            echo "<div class='alert alert-success'>Tarea creada correctamente.</div>";
-
-                            $insert->close();
-                            $conexion->close();
+                            
                         }
                         catch(mysqli_sql_exception $e){
                             echo "Error al guardar la tarea" . $e->getMessage();
                         }
+                        finally{
+                            $conexion->close();
+                        }
                     }
-                    ?>
+                    
+                ?>
                 </div>
             </main>
         </div>
