@@ -110,11 +110,11 @@
                             
                                     // Agregar filtros a la consulta si existen
                                     if (count($filtros) > 0) {
-                                        $query .= " WHERE " . implode(" AND ", $filtros);
+                                        $consulta .= " WHERE " . implode(" AND ", $filtros);
                                     }
                             
                                     // Ejecuta la consulta
-                                    $consulta = $conexion->query($query);
+                                    $consulta = $conexion->query($consulta);
                             
                                     // Comprueba resultados
                                     if ($consulta->num_rows > 0) {
@@ -136,7 +136,7 @@
                                     }
                             
                                 } catch (mysqli_sql_exception $e) {
-                                    echo "<div class='alert alert-danger'>Error al listar tareas: " . htmlspecialchars($e->getMessage()) . "</div>";
+                                    echo "<div class='alert alert-danger'>Error al listar tareas: " . $e->getMessage() . "</div>";
                                 } finally {
                                     $conexion->close();
                                 }
