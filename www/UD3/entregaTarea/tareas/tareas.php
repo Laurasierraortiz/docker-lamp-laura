@@ -45,6 +45,8 @@
                             <tbody>
                             <?php
                                 include_once('../mysqli.php');
+                            //Resultados sin filtrar
+                            if (!empty($_GET)) {
                                 try {
                                     // Conectar y obtener datos de la base de datos.
                                     $conexion = conexionMysqli('tareas');
@@ -68,7 +70,8 @@
                                             </td>";
                                             echo "</tr>";
                                         }
-                                    } else {
+                                    } 
+                                    else {
                                         echo "<div class='alert alert-danger'>No hay tareas registradas</div>";
                                     }
 
@@ -79,6 +82,66 @@
                                 finally{
                                     $conexion->close();
                                 }
+                            //Resultados filtrados
+                            } else {
+                                try {
+                                    // Inicializa la conexión
+                                    $conexion = conexionMysqli('tareas');
+                            
+                                    // Obtén los parámetros de filtro
+                                    $id_usuario = isset($_GET['id_usuario']) && is_numeric($_GET['id_usuario']) ? intval($_GET['id_usuario']) : null;
+                                    $estado = isset($_GET['estado']) && in_array($_GET['estado'], ['pendiente', 'completado']) ? $_GET['estado'] : null;
+                            
+                                    // Construye la consulta con filtros dinámicos
+                                    $consulta = "
+                                                SELECT 
+                                                    tareas.id, tareas.titulo, tareas.descripcion, tareas.estado, usuarios.username 
+                                                FROM tareas 
+                                                LEFT JOIN usuarios ON tareas.id_usuario = usuarios.id";
+                            
+                                    $filtros = [];
+                                    if ($id_usuario !== null) {
+                                        $filtros[] = "usuarios.id = $id_usuario";
+                                    }
+                                    if ($estado !== null) {
+                                        $estado_escapado = $conexion->real_escape_string($estado);
+                                        $filtros[] = "tareas.estado = '$estado_escapado'";
+                                    }
+                            
+                                    // Agregar filtros a la consulta si existen
+                                    if (count($filtros) > 0) {
+                                        $query .= " WHERE " . implode(" AND ", $filtros);
+                                    }
+                            
+                                    // Ejecuta la consulta
+                                    $consulta = $conexion->query($query);
+                            
+                                    // Comprueba resultados
+                                    if ($consulta->num_rows > 0) {
+                                        while ($tarea = $consulta->fetch_assoc()) {
+                                            echo "<tr>";
+                                            echo "<td>" . $tarea['id'] . "</td>";
+                                            echo "<td>" . $tarea['titulo'] . "</td>";
+                                            echo "<td>" . $tarea['descripcion'] . "</td>";
+                                            echo "<td>" . $tarea['estado'] . "</td>";
+                                            echo "<td>" . $tarea['username'] . "</td>";
+                                            echo "<td>
+                                                <a href='editaTareaForm.php?id=" . $tarea['id'] . "' class='btn btn-warning btn-sm'>Editar</a>
+                                                <a href='borraTarea.php?id=" . $tarea['id'] . "' class='btn btn-danger btn-sm'>Borrar</a>
+                                            </td>";
+                                            echo "</tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='6' class='text-center'>No se encontraron tareas</td></tr>";
+                                    }
+                            
+                                } catch (mysqli_sql_exception $e) {
+                                    echo "<div class='alert alert-danger'>Error al listar tareas: " . htmlspecialchars($e->getMessage()) . "</div>";
+                                } finally {
+                                    $conexion->close();
+                                }
+                            }
+  
                                 
                             ?>
                         </table>

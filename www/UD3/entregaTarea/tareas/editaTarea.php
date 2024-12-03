@@ -24,39 +24,46 @@
                 <div class="container justify-content-between">
                 <?php 
                     include_once("../utils.php");
-            
-                    //Comprobamos si el formulario fue enviado por el método POST
-                    if($_SERVER['REQUEST_METHOD'] == 'POST'){
-                        //Recuperamos los datos del formulario
-                        $tarea = $_POST['tarea'];
+
+                    // Comprobamos si el formulario fue enviado por el método POST
+                    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                        // Recuperamos los datos del formulario
+                        $id_tarea = $_POST['id'];
                         $titulo = $_POST['titulo'];
                         $descripcion = $_POST['descripcion'];
                         $estado = $_POST['estado'];
-                        $id_usuario = $_POST['id_usuario'];
-                        
+                        $id_usuario = $_POST['usuario']; 
 
-                        //Llamamos a la función para filtrar y guardar los datos
-                        $validarInfo = validarInfo($titulo, $descripcion, $estado, $username);
+                        // Llamamos a la función para filtrar y validar los datos
+                        if (validarInfo($titulo, $descripcion, $estado, $id_usuario)) {
+                            include_once('../mysqli.php');
+                            try {
+                                $conexion = conexionMysqli('tareas'); // Conexión a la DB (mysqli)
 
-                        include_once('../mysqli.php');
-                        try {
-                            $conexion = conexionMysqli('tareas');//Conexión a la DB (mysqli)
+                                // Preparamos la consulta
+                                $consulta = $conexion->prepare(
+                                                    "UPDATE tareas SET titulo = ?, descripcion = ?, estado = ?,id_usuario = ? WHERE id = ?"
+                                );
+                                // Enlazamos los parámetros
+                                $consulta->bind_param("sssii", $titulo, $descripcion, $estado, $id_usuario, $id_tarea);
 
-                            //Insertamos los datos en la tabla
-                            $consulta = $conexion->prepare(
-                                                    "UPDATE tareas (SET titulo = ?, descripcion = ?, estado = ?, id_usuario = ? WHERE id = ?");
-                            $consulta->bind_param("i", $id_tarea);
-                            $consulta->execute();
-                        }
-                        catch(mysqli_sql_exception $e){
-                            echo "<div class='alert alert-danger'>Error al crear la tarea: " . $e->getMessage();
-                        }
-                        finally{
-                            $conexion->close();
+                                // Ejecutamos la consulta
+                                if ($consulta->execute()) {
+                                    echo "<div class='alert alert-success'>Tarea actualizada correctamente.</div>";
+                                } else {
+                                    echo "<div class='alert alert-danger'>Error al ejecutar la consulta: " . $consulta->error . "</div>";
+                                }
+                            } catch (mysqli_sql_exception $e) {
+                                echo "<div class='alert alert-danger'>Error: " . $e->getMessage() . "</div>";
+                            } finally {
+                                $conexion->close();
+                            }
+                        } else {
+                            echo "<div class='alert alert-danger'>Validación de datos fallida. Verifique los campos.</div>";
                         }
                     }
-                    
-                ?>
+                    ?>
+
                 </div>
             </main>
         </div>

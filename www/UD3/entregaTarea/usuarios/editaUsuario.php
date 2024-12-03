@@ -59,14 +59,14 @@
                    
                     if($_SERVER['REQUEST_METHOD'] == 'POST'){
                         //Recuperamos los datos del formulario
+                        $id = $_POST['id'];
+                        $username = $_POST['username'];
                         $nombre = $_POST['nombre'];
                         $apellidos = $_POST['apellidos'];
-                        $username = $_POST['username'];
                         $contrasena = $_POST['contrasena'];
-                        $id = $_POST['id'];
                     
                          //Llamamos a la función para filtrar y guardar los datos
-                         $validarInfo = validarInfo($nombre, $apellidos, $username, $contrasena);
+                         $validarInfo = validarInfo($username, $nombre, $apellidos, $contrasena);
 
                         include_once('../pdo.php');//incluimos el archivo pdo.php
                         // Conexión a la DB (PDO)                    

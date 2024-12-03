@@ -64,7 +64,7 @@
                     }
                     
                     catch(mysqli_sql_exception $e){
-                        echo "<div class='alert alert-danger'>Error al conectar la base de datos: " . $e->get_message() . "</div>";
+                        echo "<div class='alert alert-danger'>Error al conectar la base de datos: " . $e->getMessage() . "</div>";
                     }
                     finally{
                         $conexion->close();
@@ -78,7 +78,7 @@
                 <div>
                     <input type="submit" class="btn btn-success" value="Enviar">
                 </div>
-                    </form>
+                </form>
                 </div>
             </main>
         </div>

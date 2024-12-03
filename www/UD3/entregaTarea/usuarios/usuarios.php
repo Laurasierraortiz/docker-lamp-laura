@@ -51,7 +51,7 @@
                                 try {
                                     $conexion = conexionPDO('tareas');//conectamos a la DB(PDO)
                                     $consulta = $conexion->prepare(//preparamos la consulta
-                                                    "SELECT id, username, nombre, apellidos, contrasena FROM usuarios");
+                                                    "SELECT id, username, nombre, apellidos FROM usuarios");
                                     $consulta->execute();//ejecutamos la consulta
                                     $usuarios = $consulta->fetchAll(PDO::FETCH_ASSOC);
                                     //fetchAll: obtiene los datos de la consulta en una sola vez

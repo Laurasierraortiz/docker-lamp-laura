@@ -23,85 +23,71 @@
 
                 <div class="container justify-content-between">
                 <?php
-                   
-                    //Para seleccionar el id del usuario tenemos que cogerla  a través de la URL
-                    $id = $_GET['id'] ?? null;
-                    include_once('../mysqli.php');//incluimos el archivo mysqli.php para conectar a la DB
+                include_once('../mysqli.php');
+                $id_url = $_GET['id']; 
 
-                    try{
-                        $conexion = conexionMysqli('tareas');//Conexión a la DB(mysqli)
-                        $consulta = $conexion->query(
-                                                "SELECT titulo, descripcion, estado, id_usuario
-                                                 FROM tareas WHERE id = ?");
-                        $consulta->bind_param("i", $id);
-                        $consulta->execute();
-                        $resultado = $consulta->get_result();
-                        $tareas = $consulta->fetch_assoc();
-                        
-                        $usuariosStmt = $conexion->query("SELECT id, username FROM usuarios");
-                        $usuarios = $usuariosStmt->fetch_all(MYSQLI_ASSOC);
-                    }
-                    catch(mysqli_sql_exception $e) {
-                        echo "<div class='alert alert-danger'>Error al conectar la base de datos: " . $e->getMessage() . "</div>";
-                    }
-                    finally{
-                        $conexion->close();
-                    }
+                $tarea = [];
+                $usuarios = [];
 
-                    ?>
-                
+                try {
+                    $conexion = conexionMysqli('tareas');
+
+                    // Obtener la tarea
+                    $consulta = $conexion->prepare(
+                                                "SELECT titulo, descripcion, estado, id_usuario FROM tareas WHERE id = ?");
+                    $consulta->bind_param("i", $id_url);
+                    $consulta->execute();
+                    $resultado = $consulta->get_result();
+                    $tarea = $resultado->fetch_assoc();
+
+                    // Obtener todos los usuarios
+                    $usuariosSelect = $conexion->query("SELECT id, username FROM usuarios");
+                    while ($usuario = $usuariosSelect->fetch_assoc()) {
+                        $usuarios[] = $usuario;
+                    }
+                } catch (mysqli_sql_exception $e) {
+                    echo "<div class='alert alert-danger'>Error: " . $e->getMessage() . "</div>";
+                } finally {
+                    $conexion->close();
+                }
+            ?>
 
                 <form action="editaTarea.php" method="POST" class="mb-2 w-50">
                 <div class="mb-3">
                     <label for="titulo" class="form-label">Título</label>
-                    <input type="text" class="form-control" id="titulo" name="titulo" required>
+                    <input type="text" class="form-control" id="titulo" name="titulo" value="<?php echo $tarea['titulo']; ?>" required>
                 </div>
                 <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción</label>
-                    <input type="text" class="form-control" id="descripcion" name="descripcion" required>
+                    <input type="text" class="form-control" id="descripcion" name="descripcion" value="<?php echo $tarea['descripcion'];?>" required>
                 </div>
                 <div class="mb-3">
                     <label for="">Estado</label>
                     <select class="form-select" name="estado">
                         <option selected disabled value="">Selecciona estado</option>
-                        <option>Pendiente</option>
-                        <option>En proceso</option>
-                        <option>Completada</option>
+                        <option value="Pendiente" <?php echo $tarea['estado'] == 'Pendiente' ? 'selected' : ''; ?>>Pendiente</option>
+                        <option value="En proceso" <?php echo $tarea['estado'] == 'En proceso' ? 'selected' : ''; ?>>En proceso</option>
+                        <option value="Completada" <?php echo $tarea['estado'] == 'Completada' ? 'selected' : ''; ?>>Completada</option>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label for="">Usuario</label>
                     <select class="form-select" name="usuario">
                     <option value="">Selecciona un usuario</option>
-                    <?php
+                    <?php 
+                        foreach ($usuarios as $usuario) { ?>
+                            <option value="<?php echo $usuario['id']; ?>" 
+                                <?php echo $tarea['id_usuario'] == $usuario['id'] ? 'selected' : ''; ?>>
+                                <?php echo $usuario['username']; ?>
+                            </option>
+                        <?php } ?>
 
-                    //Para seleccionar el id del usuario tenemos que cogerla  a través de la URL
-                    //$id = $_GET['id'];
-
-                    include_once('../mysqli.php');//incluimos el archivo mysqli.php para conectar a la DB
-                    try{
-                        $conexion = conexionMysqli('tareas');//Conexión a la DB(mysqli)
-
-                        $consulta = $conexion->query(
-                                                "SELECT id, username FROM usuarios");
-                        while($fila = $consulta->fetch_assoc()){
-                            $username = $fila["username"];
-                            echo "<option value=$username>$username</option>";
-                        }
-                    }
                     
-                    catch(mysqli_sql_exception $e){
-                        echo "<div class='alert alert-danger'>Error al conectar la base de datos: " . $e->get_message() . "</div>";
-                    }
-                    finally{
-                        $conexion->close();
-                    }
-                    
-                ?>
                     </select>
                 </div>
 
                 <div>
+                    <input type="hidden" name="id" value="<?php echo $id_url?>">
                     <input type="submit" class="btn btn-success" value="Enviar">
                 </div>
                     </form>

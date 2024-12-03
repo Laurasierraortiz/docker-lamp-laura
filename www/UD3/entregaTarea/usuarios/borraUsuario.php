@@ -34,7 +34,7 @@
                     
                          
                         //Para seleccionar el id del usuario tenemos que cogerla  a través de la URL
-                        $id = $_GET['id'];
+                        $id_url = $_GET['id'];
 
                         try {
                             // Conexión a la base de datos
@@ -44,13 +44,13 @@
                             $consulta = $conexion->prepare(
                                                     "DELETE FROM tareas WHERE id_usuario = :id");
                             //Sustituimos cada parámetro por el valor introducido en el formulario
-                            $consulta->bindParam(':id', $id, PDO::PARAM_INT);
+                            $consulta->bindParam(':id', $id_url, PDO::PARAM_INT);
                             $consulta->execute();//ejecutamos la consulta
 
                             //Eliminamos el usuario seleccionado
                             $consulta = $conexion->prepare("DELETE FROM usuarios WHERE id = :id");
                             //Sustituimos cada parámetro por el valor introducido en el formulario
-                            $consulta->bindParam(':id', $id, PDO::PARAM_INT);
+                            $consulta->bindParam(':id', $id_url, PDO::PARAM_INT);
                             $consulta->execute();//ejecutamos la consulta
 
                             echo "<div class='alert alert-success'>Usuario borrado correctamente.</div>";

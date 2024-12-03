@@ -25,7 +25,7 @@
                 <?php
 
                     //Para seleccionar el id del usuario tenemos que cogerla  a través de la URL
-                    $id = $_GET['id'];
+                    $id_url = $_GET['id'];
 
                     include_once('../pdo.php');//incluimos el archivo PDO para conectar a la DB
 
@@ -33,8 +33,8 @@
                     try {
                         $conexion = conexionPDO('tareas');
                         $consulta = $conexion->prepare(
-                                                "SELECT * FROM usuarios WHERE id = :id");
-                        $consulta->bindParam(':id', $id, PDO::PARAM_INT);
+                                                "SELECT id, username, nombre, apellidos, contrasena FROM usuarios WHERE id = :id");
+                        $consulta->bindParam(':id', $id_url, PDO::PARAM_INT);
                         //bindParam: método que asocia un valor a un parámetro, en este caso a los que recuperamos del formulario
                         //PDO::PARAm_INT: indica como va a ser el valor introducido, en este caso, un Int
                         $consulta->execute();//ejecutamos la consulta
