@@ -1,5 +1,6 @@
 <?php
-//Función para establecer conexión mysqli
+
+//CONEXIÓN DB
 function conexionMysqli($dbName){
     $conexion = new mysqli('db', 'root', 'test', $dbName);
 

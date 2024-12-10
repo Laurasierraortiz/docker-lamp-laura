@@ -31,7 +31,7 @@
                 
                 try{
                     //Establecemos la conexión a la base de datos
-                    $conexion = conexionMysqli('tareas');
+                    $conexion = conexionMysqli(null);
 
                     //Comprobamos si existe la DB
                     $sql = "SHOW DATABASES LIKE 'tareas'";//muestra una lista de DB
